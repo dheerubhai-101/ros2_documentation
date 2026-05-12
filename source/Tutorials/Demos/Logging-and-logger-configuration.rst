@@ -243,7 +243,7 @@ The following code shows how to enable the logger service while creating the nod
     .. code-block:: C++
 
         // Create a node with logger service enabled
-        auto node = std::make_shared<rclcpp::Node>("NodeWithLoggerService", rclcpp::NodeOptions().enable_logger_service(true))
+        auto node = std::make_shared<rclcpp::Node>("NodeWithLoggerService", rclcpp::NodeOptions().enable_logger_service(true));
 
   .. group-tab:: Python
 
@@ -445,6 +445,11 @@ You should see that debug, warn, error and fatal logs aren't colorized now.
    In windows the colorization method relies on console APIs.
    If it is forced you will get a new warning saying that colorization failed.
    The default behavior already checks if the output is a console or not, so forcing colorization is not recommended.
+
+.. note::
+
+   If you start several nodes via ``ros2 launch``, no node has an active terminal attached to it (unless you set ``emulate_tty=True``).
+   This means that to get colorized output for ``ros2 launch``, you need to set ``RCUTILS_COLORIZED_OUTPUT=1`` explicitly.
 
 Default stream for console output
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

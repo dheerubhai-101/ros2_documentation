@@ -164,7 +164,7 @@ An action server requires 6 things:
 5. A callback function for handling cancellation: ``handle_cancel``.
 6. A callback function for handling goal accept: ``handle_accept``.
 
-The implementation of the various callbacks is done with [lambda expressions](https://en.cppreference.com/w/cpp/language/lambda) within the constructor.
+The implementation of the various callbacks is done with `lambda expressions <https://en.cppreference.com/w/cpp/language/lambda>`_ within the constructor.
 Note that all of the callbacks need to return quickly, otherwise we risk starving the executor.
 
 We start with the callback for handling new goals:
@@ -222,7 +222,7 @@ Open up ``custom_action_cpp/CMakeLists.txt``, and add the following right after 
   target_compile_definitions(action_server
     PRIVATE "CUSTOM_ACTION_CPP_BUILDING_DLL")
   target_link_libraries(action_server PUBLIC
-    ${custom_action_interfaces_TARGETS}
+    custom_action_interfaces::custom_action_interfaces
     rclcpp::rclcpp
     rclcpp_action::rclcpp_action
     rclcpp_components::component)
@@ -352,7 +352,7 @@ Open up ``custom_action_cpp/CMakeLists.txt``, and add the following right after 
   target_compile_definitions(action_client
     PRIVATE "CUSTOM_ACTION_CPP_BUILDING_DLL")
   target_link_libraries(action_client PUBLIC
-    ${custom_action_interfaces_TARGETS}
+    custom_action_interfaces::custom_action_interfaces
     rclcpp::rclcpp
     rclcpp_action::rclcpp_action
     rclcpp_components::component)

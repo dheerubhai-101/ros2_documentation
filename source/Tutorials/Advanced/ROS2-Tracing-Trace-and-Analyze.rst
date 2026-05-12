@@ -43,8 +43,7 @@ Source the ROS 2 installation and verify that tracing is enabled:
 
   $ source /opt/ros/{DISTRO}/setup.bash
   $ ros2 run tracetools status
-
-You should see ``Tracing enabled`` in the output.
+  Tracing enabled
 
 Then create a workspace, and clone ``performance_test`` and ``tracetools_analysis``.
 
@@ -62,7 +61,7 @@ Install dependencies with rosdep.
 .. code-block:: console
 
   $ rosdep update
-  $ rosdep install --from-paths src --ignore-src -y
+  $ rosdep install --from-paths src --ignore-src -y --skip-keys test_tracetools
 
 Then build and configure ``performance_test`` for ROS 2.
 See its `documentation <https://gitlab.com/ApexAI/performance_test/-/tree/master/performance_test#performance_test>`_.

@@ -49,12 +49,12 @@ Navigate into ``ros2_ws/src`` and create a new package:
 
 Your terminal will return a message verifying the creation of your package ``python_parameters`` and all its necessary files and folders.
 
-The ``--dependencies`` argument will automatically add the necessary dependency lines to ``package.xml`` and ``CMakeLists.txt``.
+The ``--dependencies`` argument will automatically add the necessary dependency lines to ``package.xml``.
 
 1.1 Update ``package.xml``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Because you used the ``--dependencies`` option during package creation, you don't have to manually add dependencies to ``package.xml`` or ``CMakeLists.txt``.
+Because you used the ``--dependencies`` option during package creation, you don't have to manually add dependencies to ``package.xml``.
 
 As always, though, make sure to add the description, maintainer email and name, and license information to ``package.xml``.
 
@@ -186,6 +186,13 @@ For that to work, the ``__init__`` code has to be changed to:
 
             self.timer = self.create_timer(1, self.timer_callback)
 
+Since we are importing ``rcl_interfaces``, we need to add the dependency to ``package.xml`` to avoid any dependency issue in the future:
+
+.. code-block:: xml
+
+    # ...
+    <depend>rclpy</depend>
+    <depend>rcl_interfaces</depend>
 
 The rest of the code remains the same.
 Once you run the node, you can then run ``ros2 param describe /minimal_param_node my_parameter`` to see the type and description.

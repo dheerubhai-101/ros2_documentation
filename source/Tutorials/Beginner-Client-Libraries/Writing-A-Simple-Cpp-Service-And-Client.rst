@@ -166,12 +166,12 @@ The ``main`` function accomplishes the following, line by line:
 ~~~~~~~~~~~~~~~~~~
 
 The ``add_executable`` macro generates an executable you can run using ``ros2 run``.
-Add the following code block to ``CMakeLists.txt`` to create an executable named ``server``:
+Add the following code block to ``CMakeLists.txt`` just below the dependencies to create an executable named ``server``:
 
 .. code-block:: cmake
 
   add_executable(server src/add_two_ints_server.cpp)
-  target_link_libraries(server PUBLIC rclcpp::rclcpp ${example_interfaces_TARGETS})
+  target_link_libraries(server PUBLIC rclcpp::rclcpp example_interfaces::example_interfaces)
 
 So ``ros2 run`` can find the executable, add the following lines to the end of the file, right before ``ament_package()``:
 
@@ -276,7 +276,7 @@ After removing some unnecessary boilerplate from the automatically generated fil
 
 .. code-block:: cmake
 
-  cmake_minimum_required(VERSION 3.5)
+  cmake_minimum_required(VERSION 3.20)
   project(cpp_srvcli)
 
   find_package(ament_cmake REQUIRED)
@@ -284,10 +284,10 @@ After removing some unnecessary boilerplate from the automatically generated fil
   find_package(example_interfaces REQUIRED)
 
   add_executable(server src/add_two_ints_server.cpp)
-  target_link_libraries(server PUBLIC rclcpp::rclcpp ${example_interfaces_TARGETS})
+  target_link_libraries(server PUBLIC rclcpp::rclcpp example_interfaces::example_interfaces)
 
   add_executable(client src/add_two_ints_client.cpp)
-  target_link_libraries(client PUBLIC rclcpp::rclcpp ${example_interfaces_TARGETS})
+  target_link_libraries(client PUBLIC rclcpp::rclcpp example_interfaces::example_interfaces)
 
   install(TARGETS
     server

@@ -14,7 +14,7 @@ This page explains how to install ROS 2 on Ubuntu Linux from a pre-built binary 
 .. note::
 
     The pre-built binary does not include all ROS 2 packages.
-    All packages in the `ROS base variant <https://ros.org/reps/rep-2001.html#ros-base>`_ are included, and only a subset of packages in the `ROS desktop variant <https://ros.org/reps/rep-2001.html#desktop-variants>`_ are included.
+    All packages in the `ROS base variant <https://reps.openrobotics.org/rep-2001/#ros-base>`_ are included, and only a subset of packages in the `ROS desktop variant <https://reps.openrobotics.org/rep-2001/#desktop-variants>`_ are included.
     The exact list of packages are described by the repositories listed in `this ros2.repos file <https://github.com/ros2/ros2/blob/{REPOS_FILE_BRANCH}/ros2.repos>`_.
 
 There are also :doc:`deb packages <../Ubuntu-Install-Debs>` available.
@@ -22,7 +22,7 @@ There are also :doc:`deb packages <../Ubuntu-Install-Debs>` available.
 System requirements
 -------------------
 
-We currently support Ubuntu Noble (24.04) 64-bit x86 and 64-bit ARM.
+We currently support Ubuntu Resolute (26.04) 64-bit x86 and 64-bit ARM.
 The Rolling Ridley distribution will change target platforms from time to time as new platforms are selected for development.
 Most people will want to use a stable ROS distribution.
 
@@ -89,7 +89,7 @@ Install dependencies using rosdep
    $ sudo apt install -y python3-rosdep
    $ sudo rosdep init
    $ rosdep update
-   $ rosdep install --from-paths ~/ros2_{DISTRO}/ros2-linux/share --ignore-src -y --skip-keys "cyclonedds fastcdr fastdds iceoryx_binding_c rmw_connextdds rti-connext-dds-7.3.0 urdfdom_headers"
+   $ rosdep install --from-paths ~/ros2_{DISTRO}/ros2-linux/share --ignore-src -y --skip-keys "cyclonedds fastcdr fastdds iceoryx_binding_c rmw_connextdds rti-connext-dds-7.7.0 urdfdom_headers"
 
 .. include:: ../_rosdep_Linux_Mint.rst
 

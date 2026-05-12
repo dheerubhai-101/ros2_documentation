@@ -18,11 +18,12 @@ List of Distributions
 ---------------------
 
 Below is a list of current and historic ROS 2 distributions.
-Rows in the table marked in green are the currently supported distributions.
+Rows in the table marked in blue are the currently supported distributions.
 
 .. toctree::
    :hidden:
 
+   Releases/Release-Kilted-Kaiju
    Releases/Release-Jazzy-Jalisco
    Releases/Release-Humble-Hawksbill
    Releases/Release-Rolling-Ridley
@@ -33,26 +34,40 @@ Rows in the table marked in green are the currently supported distributions.
 .. raw:: html
 
    <!--
-     This CSS overrides the styles of certain rows to mark them green, indicating they are supported releases.
+     This CSS overrides the styles of certain rows to mark them blue, indicating they are supported releases.
      For the odd number rows, a line like the following must be used:
 
-       .rst-content table.docutils:not(.field-list) tr:nth-child(1) td {background-color: #33cc66;}
+       .rst-content table.distros:not(.field-list) tr:nth-child(1) td {...}
 
      For the even number rows, a line like the following must be used:
 
-       .rst-content tr:nth-child(2) {background-color: #33cc66;}
+       .rst-content tr:nth-child(2) {...}
 
      No other combination I've found has worked.  Yes, this is extremely fragile.  No, I don't understand
      why it is like this.
    -->
    <style>
-     .rst-content table.docutils:not(.field-list) tr:nth-child(1) td {background-color: #33cc66;}
-     .rst-content table.docutils:not(.field-list) tr:nth-child(3) td {background-color: #33cc66;}
-     .rst-content tr:nth-child(3) {background-color: #33cc66;}
+     /* Targeting the cells and rows for the background and plain text */
+    .rst-content table.distros:not(.field-list) tr:nth-child(1) td,
+    .rst-content table.distros tr:nth-child(2),
+    .rst-content table.distros tr:nth-child(4) {
+      background-color: #22314E;
+      color: white;
+    }
+
+    /* Targeting the links inside those specific rows to force them to be not-blue */
+    .rst-content table.distros:not(.field-list) tr:nth-child(1) td a,
+    .rst-content table.distros tr:nth-child(2) a,
+    .rst-content table.distros tr:nth-child(4) a {
+      color: #B0B0B0 !important;
+    }
    </style>
 
 .. |rolling| image:: Releases/rolling-small.png
    :alt: Rolling logo
+
+.. |kilted| image:: Releases/kilted-small.png
+   :alt: Kilted logo
 
 .. |jazzy| image:: Releases/jazzy-small.png
    :alt: Jazzy logo
@@ -94,6 +109,11 @@ Rows in the table marked in green are the currently supported distributions.
      - Logo
      - EOL date
      - ROS Boss
+   * - :doc:`Kilted Kaiju <Releases/Release-Kilted-Kaiju>`
+     - May 23, 2025
+     - |kilted|
+     - December 2026
+     - `Scott K Logan <https://github.com/cottsay>`_
    * - :doc:`Jazzy Jalisco <Releases/Release-Jazzy-Jalisco>`
      - May 23, 2024
      - |jazzy|
@@ -108,7 +128,7 @@ Rows in the table marked in green are the currently supported distributions.
      - May 23, 2022
      - |humble|
      - May 2027
-     - `Audrow Nash <https://github.com/audrow>`_
+     - `Christophe Bédard <https://github.com/christophebedard>`_ / `Audrow Nash <https://github.com/audrow>`_
    * - :doc:`Galactic Geochelone <Releases/Release-Galactic-Geochelone>`
      - May 23, 2021
      - |galactic|
@@ -181,10 +201,10 @@ There is a new ROS 2 distribution released yearly on May 23rd (`World Turtle Day
      - Release date
      - Logo
      - EOL date
-   * - :doc:`Kilted Kaiju <Releases/Release-Kilted-Kaiju>`
-     - May 2025
+   * - :doc:`Lyrical Luth <Releases/Release-Lyrical-Luth>`
+     - May 2026
      - TBD
-     - Nov 2026
+     - May 2031
 
 
 .. _rolling_distribution:
@@ -193,7 +213,7 @@ Rolling Distribution
 --------------------
 
 :doc:`ROS 2 Rolling Ridley <Releases/Release-Rolling-Ridley>` is the rolling development distribution of ROS 2.
-It is described in `REP 2002 <https://www.ros.org/reps/rep-2002.html>`_ and was first introduced in June 2020.
+It is described in `REP 2002 <https://reps.openrobotics.org/rep-2002/>`_ and was first introduced in June 2020.
 
 The Rolling distribution of ROS 2 serves two purposes:
 
@@ -205,3 +225,11 @@ We recommend that most people use the most recent stable distribution instead (s
 
 Packages released into the Rolling distribution will be automatically released into future stable distributions of ROS 2.
 :doc:`Releasing a ROS 2 package <../How-To-Guides/Releasing/Releasing-a-Package>` into the Rolling distribution follows the same procedures as all other ROS 2 distributions.
+
+Cross-Distribution Communications
+---------------------------------
+
+Nodes are not guaranteed to be able to communicate across distributions.
+For example, a node built & running against Humble is not guaranteed to be able to communicate correctly with a node built & running against Iron.
+It may or may not work, but it is not supported and should not be relied upon.
+Note that :ref:`cross-vendor (single-distro) communications are also not guaranteed <different-middleware-vendors-cross-vendor-communication>`.

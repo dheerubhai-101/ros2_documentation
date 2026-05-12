@@ -25,17 +25,17 @@ C
 Standard
 ^^^^^^^^
 
-We will target C99.
+We will target C17.
 
 Style
 ^^^^^
 
 We will use `Python's PEP7 <https://www.python.org/dev/peps/pep-0007/>`__ for our C style guide, with some modifications and additions:
 
-* We will target C99, as we do not need to support C89 (as PEP7 recommends)
+* We will target C17, as we do not need to support C89 (as PEP7 recommends)
 
   * rationale: among other things it allows us to use both ``//`` and ``/* */`` style comments
-  * rationale: C99 is pretty much ubiquitous now
+  * rationale: C17 is pretty much ubiquitous now
 
 * C++ style ``//`` comments are allowed
 * (optional) Always place literals on the left-hand side of comparison operators, e.g. ``0 == ret`` instead of ``ret == 0``
@@ -60,7 +60,7 @@ C++
 Standard
 ^^^^^^^^
 
-{DISTRO_TITLE} targets C++17.
+{DISTRO_TITLE} targets C++20.
 
 Style
 ^^^^^
@@ -92,6 +92,14 @@ Variable Naming
   * rationale: keep variable naming case consistent across the project
   * rationale: easy to tell the scope of a variable at a glance
   * consistency across languages
+
+* **Note on naming conventions**: ROS 2 deviates from the Google C++ Style Guide in several naming areas:
+
+  * The Google style guide recommends ``kPascalCase`` for constants (e.g., ``kDaysInAWeek``)
+  * ROS 2 projects currently use a mix of ``snake_case``, ``PascalCase``, and ``UPPER_CASE`` naming conventions
+  * This deviation is for historical reasons and consistency with existing ROS codebases
+  * For new projects, developers should follow the existing conventions in related ROS 2 packages
+  * When in doubt, prefer consistency with surrounding code over strict adherence to Google style
 
 Function and Method Naming
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -370,7 +378,8 @@ CMake
 Version
 ^^^^^^^
 
-We will target CMake 3.8.
+Read `REP 2000 <https://reps.openrobotics.org/rep-2000/>`_ to determine the minimum CMake version you should support.
+Currently the minimum version of any supported ROS distro is **3.14.4** (ROS Humble on macOS).
 
 Style
 ^^^^^

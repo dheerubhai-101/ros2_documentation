@@ -10,9 +10,9 @@ Ubuntu (deb packages)
    :depth: 2
    :local:
 
-Deb packages for ROS 2 {DISTRO_TITLE_FULL} are currently available for Ubuntu Noble (24.04).
+Deb packages for ROS 2 {DISTRO_TITLE_FULL} are currently available for Ubuntu Resolute (26.04).
 The Rolling Ridley distribution will change target platforms from time to time as new platforms are selected for development.
-The target platforms are defined in `REP 2000 <https://ros.org/reps/rep-2000.html>`__.
+The target platforms are defined in `REP 2000 <https://reps.openrobotics.org/rep-2000/>`__.
 Most people will want to use a stable ROS distribution.
 
 Resources
@@ -20,7 +20,7 @@ Resources
 
 * Status Page:
 
-  * ROS 2 {DISTRO_TITLE} (Ubuntu Noble 24.04): `amd64 <http://repo.ros2.org/status_page/ros_{DISTRO}_default.html>`__\ , `arm64 <http://repo.ros2.org/status_page/ros_{DISTRO}_unv8.html>`__
+  * ROS 2 {DISTRO_TITLE} (Ubuntu Resolute Raccoon 26.04): `amd64 <http://repo.ros2.org/status_page/ros_{DISTRO}_default.html>`__\ , `arm64 <http://repo.ros2.org/status_page/ros_{DISTRO}_unv8.html>`__
 * `Jenkins Instance <http://build.ros2.org/>`__
 * `Repositories <http://repo.ros2.org>`__
 
@@ -115,6 +115,8 @@ You should see the ``talker`` saying that it's ``Publishing`` messages and the `
 This verifies both the C++ and Python APIs are working properly.
 Hooray!
 
+If you want to use other RMW implementations, you can check the :doc:`guide <./RMW-Implementations>`.
+
 Next steps
 ----------
 
@@ -133,13 +135,13 @@ have already installed from binaries, run the following command:
 
 .. code-block:: console
 
-   $ sudo apt remove ~nros-{DISTRO}-* && sudo apt autoremove
+   $ sudo apt remove '~nros-{DISTRO}-*' && sudo apt autoremove
 
 You may also want to remove the repository:
 
 .. code-block:: console
 
-   $ sudo rm /etc/apt/sources.list.d/ros2.list
+   $ sudo apt remove ros2-apt-source
    $ sudo apt update
    $ sudo apt autoremove
    $ sudo apt upgrade # Consider upgrading for packages previously shadowed.

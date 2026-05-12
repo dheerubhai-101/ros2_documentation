@@ -14,20 +14,18 @@ This page explains how to setup a development environment for ROS 2 on Windows.
 System requirements
 -------------------
 
-Only Windows 10 is supported.
-
 Language support
 ^^^^^^^^^^^^^^^^
 
 Make sure you have a locale which supports ``UTF-8``.
-For example, for a Chinese-language Windows 10 installation, you may need to install an `English language pack <https://support.microsoft.com/en-us/windows/language-packs-for-windows-a5094319-a92d-18de-5b53-1cfc697cfca8>`_.
+For example, for a Chinese-language Windows installation, you may need to install an `English language pack <https://support.microsoft.com/en-us/windows/language-packs-for-windows-a5094319-a92d-18de-5b53-1cfc697cfca8>`_.
 
 Create a location for the ROS 2 installation
 --------------------------------------------
 
 This location will contain both the installed binary packages, plus the ROS 2 installation itself.
 
-Start a powershell session (usually by clicking on the start menu, then typing ``powershell``).
+Start an Administrator Command Prompt session (usually by clicking on the start menu, then typing ``command prompt``, then right-click and ``Run as administrator``).
 
 Then create a directory to store the installation.
 Because of Windows path-length limitations, this should be as short as possible.
@@ -35,21 +33,25 @@ We'll use ``C:\dev`` for the rest of these instructions.
 
 .. code-block:: console
 
-   $ md C:\dev
+   $ mkdir C:\dev
 
 Increase the Windows maximum path length
 ----------------------------------------
 
 By default, Windows is restricted to a maximum path length (MAX_PATH) of 260 characters.
 The ROS 2 build will use significantly longer path lengths, so we will increase that.
-Using the powershell session you started above, run the following:
+Using the session you started above, run the following:
 
 .. code-block:: console
 
-   $ New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+   $ powershell New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+.. note::
+
+   Execute as administrator.
 
 You can read more about this limitation in `Microsoft's documentation <https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry>`__.
 
+Close the administrator terminal and follow using a new Command Prompt session.
 
 Install prerequisites
 ---------------------
@@ -58,19 +60,19 @@ Install MSVC
 ^^^^^^^^^^^^
 
 In order to compile the ROS 2 code, the MSVC compiler must be installed.
-Currently it is recommended to use MSVC 2019.
+Currently it is recommended to use MSVC 2022.
 
-Continue using the previous powershell session, and run the following command to download it:
-
-.. code-block:: console
-
-   $ irm https://aka.ms/vs/16/release/vs_buildtools.exe -OutFile vs_buildtools_2019.exe
-
-Now install MSVC 2019:
+Continue using the previous session, and run the following command to download it:
 
 .. code-block:: console
 
-   $ .\vs_buildtools_2019.exe --quiet --wait --norestart --add Microsoft.Component.MSBuild --add Microsoft.Net.Component.4.6.1.TargetingPack --add Microsoft.Net.Component.4.8.SDK --add Microsoft.VisualStudio.Component.CoreBuildTools --add Microsoft.VisualStudio.Component.Roslyn.Compiler --add Microsoft.VisualStudio.Component.TextTemplating --add Microsoft.VisualStudio.Component.VC.CLI.Support --add Microsoft.VisualStudio.Component.VC.CoreBuildTools --add Microsoft.VisualStudio.Component.VC.CoreIde --add Microsoft.VisualStudio.Component.VC.Redist.14.Latest --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core --add Microsoft.VisualStudio.Workload.MSBuildTools --add Microsoft.VisualStudio.Workload.VCTools
+   $ powershell irm https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools_2022.exe
+
+Now install MSVC 2022:
+
+.. code-block:: console
+
+   $ .\vs_buildtools_2022.exe --quiet --wait --norestart --add Microsoft.Component.MSBuild --add Microsoft.Net.Component.4.6.1.TargetingPack --add Microsoft.Net.Component.4.8.SDK --add Microsoft.VisualStudio.Component.CoreBuildTools --add Microsoft.VisualStudio.Component.Roslyn.Compiler --add Microsoft.VisualStudio.Component.TextTemplating --add Microsoft.VisualStudio.Component.VC.CLI.Support --add Microsoft.VisualStudio.Component.VC.CoreBuildTools --add Microsoft.VisualStudio.Component.VC.CoreIde --add Microsoft.VisualStudio.Component.VC.Redist.14.Latest --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK --add Microsoft.VisualStudio.Component.Windows11SDK.22621 --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core --add Microsoft.VisualStudio.Workload.MSBuildTools --add Microsoft.VisualStudio.Workload.VCTools
 
 .. note::
 
@@ -81,18 +83,23 @@ Install pixi
 
 ROS 2 uses `conda-forge <https://conda-forge.org/>`__ as a backend for packages, with `pixi <https://pixi.sh/latest/>`__ as the frontend.
 
-Continue using the previous powershell session, and use the instructions from https://pixi.sh/latest/ to install ``pixi``.
-Once ``pixi`` has been installed, close the powershell session and start it again, which will ensure ``pixi`` is on the PATH.
+.. note::
+
+   The installation of conda-forge may trigger Windows Defender to treat it as a threat, but this can be safely ignored by clicking "More info" and "Run anyway".
+
+Use use the instructions on https://pixi.sh/latest/ to install ``pixi`` either with the Windows Installer or using command line in your opened Command Prompt terminal.
+
+Once ``pixi`` has been installed, close the Command Prompt session and start it again, which will ensure ``pixi`` is on the PATH.
 
 Install dependencies
 ^^^^^^^^^^^^^^^^^^^^
 
-Download the pixi configuration file in the existing powershell session:
+Download the pixi configuration file in the existing Command Prompt session:
 
 .. code-block:: console
 
    $ cd C:\dev
-   $ irm https://raw.githubusercontent.com/ros2/ros2/refs/heads/{REPOS_FILE_BRANCH}/pixi.toml -OutFile pixi.toml
+   $ powershell irm https://raw.githubusercontent.com/ros2/ros2/refs/heads/{REPOS_FILE_BRANCH}/pixi.toml -OutFile pixi.toml
 
 Install dependencies:
 
@@ -100,26 +107,25 @@ Install dependencies:
 
    $ pixi install
 
-You should now close the powershell session, as the rest of the instructions will use the Windows command prompt.
 
 Build ROS 2
 -----------
 
-Start a new Windows command prompt, which will be used for the build.
+You can use the same Windows Command Prompt for the build.
 
 Source the MSVC compiler
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-This is required in the command prompt you'll use to compile ROS 2, but it is *not* required when running:
+This is required in the Command Prompt you'll use to compile ROS 2, but it is *not* required when running:
 
 .. code-block:: console
 
-  $ call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+  $ call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 
 Source the pixi environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This is required in every command prompt you open to set up paths to the dependencies:
+This is required in every Command Prompt you open to set up paths to the dependencies:
 
 .. code-block:: console
 
@@ -166,15 +172,19 @@ To build the ``\{DISTRO}`` folder tree:
    We're using ``--merge-install`` here to avoid a ``PATH`` variable that is too long at the end of the build.
    If you're adapting these instructions to build a smaller workspace then you might be able to use the default behavior which is isolated install, i.e. where each package is installed to a different folder.
 
+.. note::
+
+   Source installation can take a long time given the large number of packages being pulled into the workspace.
+
 Setup environment
 -----------------
 
-Start a new Windows command prompt, which will be used in the examples.
+Start a new Windows Command Prompt, which will be used in the examples.
 
 Source the pixi environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This is required in every command prompt you open to set up paths to the dependencies:
+This is required in every Command Prompt you open to set up paths to the dependencies:
 
 .. code-block:: console
 
@@ -184,7 +194,7 @@ This is required in every command prompt you open to set up paths to the depende
 Source the ROS 2 environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This is required in every command prompt you open to setup the ROS 2 workspace:
+This is required in every Command Prompt you open to setup the ROS 2 workspace:
 
 .. code-block:: console
 
@@ -203,6 +213,7 @@ You can run the tests using this command:
 
 .. code-block:: console
 
+   $ cd C:\dev\{DISTRO}
    $ colcon test --merge-install
 
 .. note::
@@ -215,7 +226,7 @@ Afterwards you can get a summary of the tests using this command:
 
    $ colcon test-result
 
-To run the examples, first open a clean new ``cmd.exe`` and set up the workspace by sourcing the ``local_setup.bat`` file.
+To run the examples, first open a clean new Command Prompt and set up the workspace by sourcing the ``local_setup.bat`` file.
 Then, run a C++ ``talker``\ :
 
 .. code-block:: console
@@ -223,7 +234,7 @@ Then, run a C++ ``talker``\ :
    $ call install\local_setup.bat
    $ ros2 run demo_nodes_cpp talker
 
-In a separate command prompt you can do the same, but instead run a Python ``listener``\ :
+In a separate Command Prompt you can do the same, but instead run a Python ``listener``\ :
 
 .. code-block:: console
 
@@ -236,7 +247,7 @@ Hooray!
 
 .. note::
 
-   It is not recommended to build in the same cmd prompt that you've sourced the ``local_setup.bat``.
+   It is not recommended to build in the same Command Prompt that you've sourced the ``local_setup.bat``.
 
 Next steps
 ----------
@@ -263,4 +274,4 @@ Uninstall
 
    .. code-block:: console
 
-      $ rmdir /s /q C:\dev\ros2_{DISTRO}
+      $ rmdir /s /q C:\dev\{DISTRO}

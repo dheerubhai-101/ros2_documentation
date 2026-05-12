@@ -7,7 +7,7 @@ RHEL (RPM packages)
 
 RPM packages for ROS 2 {DISTRO_TITLE_FULL} are currently available for RHEL 9.
 The Rolling Ridley distribution will change target platforms from time to time as new platforms are selected for development.
-The target platforms are defined in `REP 2000 <https://ros.org/reps/rep-2000.html>`__.
+The target platforms are defined in `REP 2000 <https://reps.openrobotics.org/rep-2000/>`__.
 Most people will want to use a stable ROS distribution.
 
 Resources
@@ -34,18 +34,19 @@ You will need to enable the EPEL repositories and the PowerTools repository:
 
 .. code-block:: console
 
-   $ sudo dnf install 'dnf-command(config-manager)' epel-release -y
-   $ sudo dnf config-manager --set-enabled crb
+   $ sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E %rhel).noarch.rpm
+   $ sudo env FORCE_DNF=1 crb enable
 
 .. note:: This step may be slightly different depending on the distribution you are using.
-          `Check the EPEL documentation <https://docs.fedoraproject.org/en-US/epel/#_quickstart>`_
+          `Check the EPEL documentation <https://docs.fedoraproject.org/en-US/epel/getting-started/>`_
 
 Next, download the ``ros2-release`` package and install it:
 
 .. code-block:: console
 
-   $ sudo dnf install "https://ftp.osuosl.org/pub/ros/packages.ros.org/ros2/rhel/$(rpm -E %rhel)/x86_64/Packages/r/ros2-release-1.0.0-1.noarch.rpm"
-
+   $ sudo dnf install curl
+   $ export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F'"' '{print $4}')
+   $ sudo dnf install "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-release-${ROS_APT_SOURCE_VERSION}-1.noarch.rpm"
 
 The `ros2-release <https://github.com/ros-infrastructure/ros-apt-source/>`_ package provides keys and repo configuration for the various ROS repositories.
 Updates to repository configuration will occur automatically when new versions of this package are released to the ROS repositories.
@@ -73,13 +74,6 @@ If you are going to build ROS packages or otherwise do development, you can also
      python3-setuptools \
      python3-vcstool \
      wget
-
-   ~ install some pip packages needed for testing and
-   ~ not available as RPMs
-   $ python3 -m pip install -U --user \
-     flake8-blind-except==0.1.1 \
-     flake8-class-newline \
-     flake8-deprecated
 
 Install ROS 2
 -------------
@@ -142,6 +136,8 @@ You should see the ``talker`` saying that it's ``Publishing`` messages and the `
 This verifies both the C++ and Python APIs are working properly.
 Hooray!
 
+If you want to use other RMW implementations, you can check the :doc:`guide <./RMW-Implementations>`.
+
 Next steps
 ----------
 
@@ -161,3 +157,9 @@ have already installed from binaries, run the following command:
 .. code-block:: console
 
    $ sudo dnf remove ros-{DISTRO}-*
+
+To remove the repository configuration run
+
+.. code-block:: console
+
+   $ sudo dnf remove ros2-release

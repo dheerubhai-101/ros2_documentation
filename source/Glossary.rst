@@ -21,10 +21,10 @@ Glossary of terms used throughout this documentation:
        A single unit of software, including source code, build system files, documentation, tests, and other associated resources.
 
    REP
-        ROS Enhancement Proposal.
+        Robotics Enhancement Proposal.
         A document that describes an enhancement, standardization, or convention for the ROS community.
         The associated REP approval process allows the community to iterate on a proposal until some consensus has been made, at which point it can be ratified and implemented, which then becomes documentation.
-        All REPs are viewable from the `REP index <http://www.ros.org/reps/rep-0000.html>`_.
+        All REPs are viewable from the `REP index <https://reps.openrobotics.org/>`_.
 
    VCS
        Version Control System, such as CVS, SVN, git, mercurial, etc...
@@ -36,3 +36,24 @@ Glossary of terms used throughout this documentation:
    repository
        A collection of packages usually managed using a :term:`VCS` like git or mercurial and usually hosted on a site like GitHub or BitBucket.
        In the context of this document, repositories usually contain one or more |packages| of one type or another.
+
+   Buffer
+       ``rosidl::Buffer<T>``, the in-memory container used by generated C++ messages for variable-length primitive array fields (``uint8[]``, ``float32[]``, ...).
+       It behaves like a ``std::vector<T>`` by default and supports pluggable memory backends so that vendors can back those fields with non-CPU memory.
+       See :doc:`Concepts/Intermediate/About-Buffer-Backends`.
+
+   Buffer backend
+       A ``pluginlib`` plugin, implementing the ``rosidl::BufferBackend`` interface, that teaches the RMW how to transport a ``rosidl::Buffer`` whose storage lives in a vendor-specific memory domain (for example, GPU memory).
+
+   Tensor message
+       A normal ROS 2 message, such as ``tensor_msgs/msg/ExperimentalTensor``, that carries tensor metadata and stores the raw tensor bytes in a ``uint8[]`` field backed by ``rosidl::Buffer``.
+       Libraries such as ``torch_conversions`` can map these messages to framework-native tensor types while the underlying bytes use a regular buffer backend such as ``cpu`` or ``cuda``.
+
+   Buffer descriptor
+       A normal ROS 2 ``.msg`` produced by a ``BufferBackend`` that travels on the wire in place of the raw ``uint8[]`` contents of a buffer-backed field.
+       Serialized descriptors must not exceed ``rosidl::kMaxBufferDescriptorSize`` (4096 bytes).
+
+   Acceptable backend list
+       The value of ``rclcpp::SubscriptionOptions::acceptable_buffer_backends`` (or ``acceptable_buffer_backends`` in ``rclpy``).
+       A comma-separated list of backend names the subscription is willing to receive; ``"cpu"`` (or empty) means CPU-only, ``"any"`` means any installed backend, and CPU is always implicitly acceptable.
+       See :doc:`How-To-Guides/Using-Buffer-Backends`.

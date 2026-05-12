@@ -203,11 +203,11 @@ In several terminals, run the following code to establish a communication with r
 
 .. code-block:: console
 
-    $ fastdds discovery --server-id 0 --ip-address 127.0.0.1 --port 11811
+    $ fastdds discovery --server-id 0 --udp-address 127.0.0.1 --udp-port 11811
 
 .. code-block:: console
 
-    $ fastdds discovery --server-id 1 --ip-address 127.0.0.1 --port 11888
+    $ fastdds discovery --server-id 1 --udp-address 127.0.0.1 --udp-port 11888
 
 ``--server-id N`` means server with id N. When referencing the servers with ``ROS_DISCOVERY_SERVER``, server ``0`` must be in first place and server ``1`` in second place.
 
@@ -263,7 +263,7 @@ In different terminals, run the following code to establish a communication with
 
 .. code-block:: console
 
-    $ fastdds discovery --server-id 0 --ip-address 127.0.0.1 --port 11811 --backup
+    $ fastdds discovery --server-id 0 --udp-address 127.0.0.1 --udp-port 11811 --backup
 
 .. tabs::
 
@@ -324,13 +324,13 @@ Run the first server listening on localhost with the default port of 11811.
 
 .. code-block:: console
 
-    $ fastdds discovery --server-id 0 --ip-address 127.0.0.1 --port 11811
+    $ fastdds discovery --server-id 0 --udp-address 127.0.0.1 --udp-port 11811
 
 In another terminal run the second server listening on localhost using another port, in this case port 11888.
 
 .. code-block:: console
 
-    $ fastdds discovery --server-id 1 --ip-address 127.0.0.1 --port 11888
+    $ fastdds discovery --server-id 1 --udp-address 127.0.0.1 --udp-port 11888
 
 Now, run each node in a different terminal.
 Use ``ROS_DISCOVERY_SERVER`` environment variable to decide which server they are connected to.
@@ -415,6 +415,67 @@ We should see how ``Listener 1`` is receiving messages from both talker nodes, w
     Once two endpoints (ROS nodes) have discovered each other, they do not need the discovery server network between them to listen to each other's messages.
 
 
+Large number of participants
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When running more than 100 DDS participants on a single host (e.g., launching more than 100 ROS 2 `contexts <http://design.ros2.org/articles/Node_to_Participant_mapping.html>`__ simultaneously), participants may fail to discover each other and become unresponsive.
+This applies to both the Discovery Server protocol and the Simple Discovery Protocol.
+
+.. note::
+
+    Each DDS *Participant* corresponds to a ROS 2 *Context*, not a ROS 2 *Node*.
+    Multiple nodes can share a single context, and each process typically creates one context by default.
+    Therefore, the number of participants depends on the number of processes (contexts), not the number of nodes.
+
+The root cause is the ``mutation_tries`` parameter in Fast DDS, which defaults to ``100``.
+This parameter controls how many attempts Fast DDS makes to find a unique unicast listening port for each participant.
+When the number of participants exceeds ``mutation_tries``, port allocation is exhausted and new participants cannot listen for incoming traffic, effectively becoming deaf.
+
+.. warning::
+
+    Having more than 119 participants on the same host within a single domain will cause their listening ports to collide with those of the next domain ID.
+
+To support more participants, increase ``mutation_tries`` by applying the following XML configuration via the ``FASTDDS_DEFAULT_PROFILES_FILE`` environment variable:
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <dds xmlns="http://www.eprosima.com">
+        <profiles>
+            <participant profile_name="participant_profile" is_default_profile="true">
+                <rtps>
+                    <builtin>
+                        <mutation_tries>1000</mutation_tries>
+                    </builtin>
+                </rtps>
+            </participant>
+        </profiles>
+    </dds>
+
+Save this file (e.g. as ``large_scale_configuration.xml``) and set the environment variable before launching your nodes:
+
+.. tabs::
+
+    .. group-tab:: Linux
+
+        .. code-block:: console
+
+            $ export FASTDDS_DEFAULT_PROFILES_FILE=large_scale_configuration.xml
+
+    .. group-tab:: Windows
+
+        .. code-block:: console
+
+            $ set FASTDDS_DEFAULT_PROFILES_FILE=large_scale_configuration.xml
+
+.. note::
+
+    The ``mutation_tries`` value should be set to at least the number of participants you intend to run on a single host.
+    Increasing it beyond what is needed has no negative side effects.
+    This configuration must be applied to **all** participants in the system, except the discovery server, for which a specific unicast port is already configured at launch.
+
+For more details, see the `Fast DDS documentation on participant configuration <https://fast-dds.docs.eprosima.com/en/latest/fastdds/xml_configuration/xml_configuration.html>`__.
+
 
 ROS 2 Introspection
 -------------------
@@ -450,7 +511,7 @@ Therefore, this section is devoted to explain how to use ROS 2 CLI with ROS 2 Da
 This will allow the Daemon to discover the entire Node graph, and to receive all topic and endpoint information.
 To do so, a Fast DDS XML configuration file is used to configure the ROS 2 Daemon and CLI tools.
 
-Below you can find a XML configuration profile, which for this tutorial should be saved in the working directory as ```super_client_configuration_file.xml``` file.
+Below you can find a XML configuration profile, which for this tutorial should be saved in the working directory as ``super_client_configuration_file.xml`` file.
 This file will configure every new participant using it, as a **Super Client**.
 
 .. code-block:: xml
@@ -540,13 +601,13 @@ Then, instantiate a ROS 2 Daemon using the **Super Client** configuration (remem
 
         .. code-block:: console
 
-            $ export FASTRTPS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
+            $ export FASTDDS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
 
     .. group-tab:: Windows
 
         .. code-block:: console
 
-            $ set FASTRTPS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
+            $ set FASTDDS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
 
 .. code-block:: console
 
@@ -565,17 +626,17 @@ We can also see the Node's Graph using the ROS 2 tool ``rqt_graph`` as follows (
 
         .. code-block:: console
 
-            $ export FASTRTPS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
+            $ export FASTDDS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
 
     .. group-tab:: Windows
 
         .. code-block:: console
 
-            $ set FASTRTPS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
+            $ set FASTDDS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
 
 .. code-block:: console
 
-    $ rqt_graph
+    $ ros2 run rqt_graph rqt_graph
 
 
 No Daemon tools
@@ -631,7 +692,7 @@ Then, run the talker and listener in separate terminals:
 
 Continue using the ROS 2 CLI with ``--no-daemon`` option with the new configuration.
 New nodes will connect with the existing Server and will know every topic.
-Exporting ``ROS_DISCOVERY_SERVER`` is not needed as the ROS 2 tools will be configured through the ``FASTRTPS_DEFAULT_PROFILES_FILE``.
+Exporting ``ROS_DISCOVERY_SERVER`` is not needed as the ROS 2 tools will be configured through the ``FASTDDS_DEFAULT_PROFILES_FILE``.
 
 .. tabs::
 
@@ -639,13 +700,13 @@ Exporting ``ROS_DISCOVERY_SERVER`` is not needed as the ROS 2 tools will be conf
 
         .. code-block:: console
 
-            $ export FASTRTPS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
+            $ export FASTDDS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
 
     .. group-tab:: Windows
 
         .. code-block:: console
 
-            $ set FASTRTPS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
+            $ set FASTDDS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml
 
 .. code-block:: console
 
@@ -685,7 +746,7 @@ After both executions are done, run the Python script to generate a graph simila
 
 .. code-block:: console
 
-    $ export FASTRTPS_DEFAULT_PROFILES_FILE="no_intraprocess_configuration.xml"
+    $ export FASTDDS_DEFAULT_PROFILES_FILE="no_intraprocess_configuration.xml"
     $ sudo bash generate_discovery_packages.bash ~/ros2/install/local_setup.bash
     $ sudo bash generate_discovery_packages.bash ~/ros2/install/local_setup.bash SERVER
     $ python3 discovery_packets.py
